@@ -6,8 +6,8 @@ import copy
 
 # variables
 numrep=5
-dt=0.1
-beta=1.0
+dt=0.01
+beta=1.67
 nkill=1
 # initial points
 xi=1.
