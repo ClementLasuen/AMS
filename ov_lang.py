@@ -6,15 +6,18 @@ import math
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 # variables
 numrep=500
+numtrajectoires = 10 # Nombre de trajectoires qui seront tracees
 dt=0.01
 beta=6.67  # tester pour 300K ou alors beta = 6.67 ou 1.67
 nkill=1
 # initial points
 xi=-0.7
 yi=0.
+
 
 #%%####### FUNCTIONS ########
 # x=pos[0] | y=pos[1]
@@ -162,10 +165,6 @@ Y = np.linspace(-1.,2.,100)
 X,Y = np.meshgrid(X,Y)
 Z = V(X,Y) 
 
-plt.figure()
-
-plt.contour(X,Y,Z) 
-
 liste_X = [[] for i in range(numrep)]
 liste_Y = [[] for i in range(numrep)]
 
@@ -173,9 +172,18 @@ for i in range(numrep):
     for j in range(len(rep[i])):
         liste_X[i].append(rep[i][j][0])
         liste_Y[i].append(rep[i][j][1])
+	
+proba = "%.3E" % proba 
 
 
-for i in range(numrep):
-    plt.plot(liste_X[i],liste_Y[i])
-
-plt.show()
+filename = 'FIGURE_AMS_BETA-{}_dt-{}_NUMREP-{}_NUMTRACES-{}.pdf'.format(beta,dt,numrep,numtrajectoires)
+with PdfPages(filename) as pdf :
+	fig, ax = plt.subplots(1, 1)
+	ax.set_xlabel('$x$')
+	ax.set_ylabel('$y$')
+	ax.set_title('Répliques, numrep = ' + str(numrep) + r',$\beta$ = ' + str(beta) + ',nkill = ' + str(nkill) + ',proba = ' + str(proba))
+	for i in range(numtrajectoires):
+		ax.plot(liste_X[i],liste_Y[i])
+	plt.contour(X,Y,Z)
+	pdf.savefig()
+	plt.close()      
