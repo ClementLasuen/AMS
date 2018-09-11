@@ -4,6 +4,9 @@
 import random
 import math
 import copy
+import numpy as np
+import matplotlib.pyplot as plt
+
 # variables
 numrep=5
 dt=0.1
@@ -13,12 +16,12 @@ nkill=1
 xi=1.
 yi=1.
 
-######## FUNCTIONS ########
+#%%####### FUNCTIONS ########
 # x=pos[0] | y=pos[1]
 # V(x,y)=0.2*x**4 + 0.2*(y-1.0/3)**4 + 3*exp(-x**2-(y-1.0/3)**2) - 3*exp(-x**2-(y-5.0/3)**2) - 5*exp(-(x-1)**2-y**2) - 5*exp(-(x+1)**2-y**2
 
 def V(x,y):
-	return 0.2*x**4 + 0.2*(y-1.0/3)**4 + 3*math.exp(-x**2-(y-1.0/3)**2) - 3*math.exp(-x**2-(y-5.0/3)**2) - 5*math.exp(-(x-1)**2-y**2) - 5*math.exp(-(x+1)**2-y**2) +4;
+	return 0.2*x**4 + 0.2*(y-1.0/3)**4 + 3*np.exp(-x**2-(y-1.0/3)**2) - 3*np.exp(-x**2-(y-5.0/3)**2) - 5*np.exp(-(x-1)**2-y**2) - 5*np.exp(-(x+1)**2-y**2) +4;
 
 # reaction coordinate: returns it for the last point
 def reccoord(ind, endroit):
@@ -76,7 +79,7 @@ def run(ind):
 	size[ind]=size[ind]+1
 	return reccoord(ind,-1)
 
-##################################################################
+#%%#################################################################
 # building the replicas structure
 rep=[]
 size=[]
@@ -123,7 +126,6 @@ zmax=4.255
 while(True):
 	alive_replicas=[]
 	replicas_to_kill=[]
-	print(nkill)
 	liste_triee=copy.deepcopy(level);
 	liste_triee.sort()
 	killing_level=liste_triee[nkill-1]
@@ -140,3 +142,30 @@ while(True):
 		break;
 	for indice in replicas_to_kill :
 		replication(indice,alive_replicas, killing_level)
+        
+        
+#%% Courbes
+
+X = np.linspace(-1.5,1.5,100)
+Y = np.linspace(-1.,2.,100)
+
+X,Y = np.meshgrid(X,Y)
+Z = V(X,Y) 
+
+plt.figure()
+
+plt.contour(X,Y,Z) 
+
+liste_X = [[] for i in range(numrep)]
+liste_Y = [[] for i in range(numrep)]
+
+for i in range(numrep):
+    for j in range(len(rep[i])):
+        liste_X[i].append(rep[i][j][0])
+        liste_Y[i].append(rep[i][j][1])
+
+
+for i in range(numrep):
+    plt.plot(liste_X[i],liste_Y[i])
+
+plt.show()
