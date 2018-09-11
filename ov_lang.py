@@ -102,18 +102,18 @@ def replication(indice,alive_replicas, killing_level):
 	rep[indice]=[]
 	ind=random.randint(0,len(alive_replicas)-1)
 	ind=alive_replicas[ind]
-	level[indice]=killing_level-1 #initialisé pour être inférieur à killing_level
+	level[indice]=reccoord(ind,0) #initialisé pour être inférieur à killing_level
 	k=0
 	while level[indice]<=killing_level:
          rep[indice].append(rep[ind][k])
          k+=1
          level[indice]=reccoord(ind,k)
-	rep[indice].append(rep[ind][k])#point dont la reccoord est > à killing_level
+	rep[indice].append(rep[ind][k]) #point dont la reccoord est > à killing_level
 	#on poursuit la trajectoire de la particule correspondant au nouveau replica
 	while zone(indice) == 0:
 		where=run(indice)
 		if where > level[indice]:
-			level[i]=where
+			level[indice]=where
 
 #AMS
 zmax=4.255
