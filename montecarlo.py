@@ -140,7 +140,7 @@ with PdfPages(filename) as pdf :
     fig, ax = plt.subplots(1, 1)
     ax.set_xlabel('$x$')
     ax.set_ylabel('$y$')
-    ax.set_title(r'Répliques, $\beta$ =' + str(beta) + r',$dt$ = ' + str(dt) + r',proba = ' + str(montecarlo))
+    ax.set_title(r'Répliques, $\beta$ =' + str(beta) + r' , $dt$ = ' + str(dt) + r' , proba = ' + str(montecarlo))
     for i in range(len(LISTE_X)):
         ax.plot(LISTE_X[i],LISTE_Y[i])
     plt.contour(X,Y,Z)
