@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 
 # variables
 numrep=5
-dt=0.1
+dt=0.01
 beta=1.0  # tester pour 300K ou alors beta = 6.67 ou 1.67
 nkill=1
 # initial points
-xi=1.
-yi=1.
+xi=-0.7
+yi=0.
 
 #%%####### FUNCTIONS ########
 # x=pos[0] | y=pos[1]
@@ -67,26 +67,22 @@ def dPot(pos):
 # evolution function
 def run(ind):
 	global rep
-	global size
     # evolution for replica ind, return reaction coordinate
 	u=random.random()
 	v=random.random()
 	tgx=math.sqrt(2.*dt/beta)*math.sqrt(-2*math.log(u))*math.cos(2*math.acos(-1)*v)
 	tgy=math.sqrt(2.*dt/beta)*math.sqrt(-2*math.log(u))*math.sin(2*math.acos(-1)*v)
 	# ref: https://en.wikipedia.org/wiki/Normal_distribution#Generating_values_from_normal_distribution
-	tPot=dPot(rep[ind][size[ind]])
-	rep[ind].append([rep[ind][size[ind]][0]-dt*tPot[0]+tgx,rep[ind][size[ind]][1]-dt*tPot[1]+tgy])
-	size[ind]=size[ind]+1
+	tPot=dPot(rep[ind][-1])
+	rep[ind].append([rep[ind][-1][0]-dt*tPot[0]+tgx,rep[ind][-1][1]-dt*tPot[1]+tgy])
 	return reccoord(ind,-1)
 
 #%%#################################################################
 # building the replicas structure
 rep=[]
-size=[]
 level=[]
 for i in range(numrep):
 	rep.append([[xi,yi]])
-	size.append(0)
 	level.append(reccoord(i,-1))
 
 # initialization of the replicas
@@ -134,7 +130,7 @@ while(True):
 		break;
 	#on remplit les listes des replicas à tuer ou à conserver
 	for l in range(len(level)):
-		if level[l]<killing_level:
+		if level[l]<=killing_level:
 			replicas_to_kill.append(l)
 		else :
 			alive_replicas.append(l)
