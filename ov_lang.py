@@ -105,12 +105,10 @@ def replication(indice,alive_replicas, killing_level):
 	level[indice]=killing_level-1 #initialisé pour être inférieur à killing_level
 	k=0
 	while level[indice]<=killing_level:
-		rep[indice].append(rep[ind][k])
-		level[indice]=reccoord(ind,k)
-		k+=1
+         rep[indice].append(rep[ind][k])
+         k+=1
+         level[indice]=reccoord(ind,k)
 	rep[indice].append(rep[ind][k])#point dont la reccoord est > à killing_level
-	#on met à jour level
-	level[indice]=reccoord(ind,k)
 	#on poursuit la trajectoire de la particule correspondant au nouveau replica
 	while zone(indice) == 0:
 		where=run(indice)
