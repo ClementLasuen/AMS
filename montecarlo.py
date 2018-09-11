@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import matplotlib.pyplot as plt
 import random
 import math
 import numpy as np
 import sys
+from matplotlib.backends.backend_pdf import PdfPages
+
 # variables
 numrep=1
 dt=0.01
@@ -24,58 +27,58 @@ def V(x,y):
 
 # reaction coordinate: returns it for the last point
 def reccoord(ind):
-	x=rep[ind][-1][0];
-	y=rep[ind][-1][1];
-	d = math.sqrt( (x-1)**2 + y**2 );
-	return 1/d ;# put here the reaction coordinate equation
+    x=rep[ind][-1][0];
+    y=rep[ind][-1][1];
+    d = math.sqrt( (x-1)**2 + y**2 );
+    return 1/d ;# put here the reaction coordinate equation
 
 # returns the zone where the last point of the replica is
 def zone(ind):
-	# val=-1 if in A
-	# rep[ind][-1] est la dernière position de la particule d'indice ind
-	val=0
-	x=rep[ind][-1][0];
-	y=rep[ind][-1][1];
+    # val=-1 if in A
+    # rep[ind][-1] est la dernière position de la particule d'indice ind
+    val=0
+    x=rep[ind][-1][0];
+    y=rep[ind][-1][1];
 	
-	#si on est en A
-	if V(x,y)<0.5 and math.sqrt( (x+1)**2 + y**2 ) <= 0.25:
-		val = -1;
-	elif V(x,y)<0.5 and math.sqrt( (x-1)**2 + y**2 ) <= 0.25:
-		val = 1;
-	else :
-		val=0;
-	# val=1 if in B
-	# val=0 if otherwise
-	# on definit A et B comme des zones ou le niveau est < quelque chose et proche d'un certain point (pour ne pas confondre A et B)
-	return val
+    #si on est en A
+    if V(x,y)<0.5 and math.sqrt( (x+1)**2 + y**2 ) <= 0.25:
+        val = -1;
+    elif V(x,y)<0.5 and math.sqrt( (x-1)**2 + y**2 ) <= 0.25:
+        val = 1;
+    else :
+        val=0;
+    # val=1 if in B
+    # val=0 if otherwise
+    # on definit A et B comme des zones ou le niveau est < quelque chose et proche d'un certain point (pour ne pas confondre A et B)
+    return val
 
 # potential derivate
 def dPot(pos):
-	x=pos[0]
-	y=pos[1]
-	return [0.8*x**3-6*x*math.exp(-x**2-(y-1./3)**2) +
-	        6*x*math.exp(-x**2-(y-5./3)**2) +
-                10*(x-1)*math.exp(-(x-1)**2-y**2) +
-                10*(x+1)*math.exp(-(x+1)**2-y**2) ,
-                0.8*(y-1./3)**3-6*(y-1./3)*math.exp(-x**2-(y-1./3)**2) +
-                6*(y-5./3)*math.exp(-x**2-(y-5./3)**2) +
-                10*y*math.exp(-(x-1)**2-y**2) +
-                10*y*math.exp(-(x+1)**2-y**2)] # put here the potential gradient
+    x=pos[0]
+    y=pos[1]
+    return [0.8*x**3-6*x*math.exp(-x**2-(y-1./3)**2) +
+            6*x*math.exp(-x**2-(y-5./3)**2) +
+            10*(x-1)*math.exp(-(x-1)**2-y**2) +
+            10*(x+1)*math.exp(-(x+1)**2-y**2) ,
+            0.8*(y-1./3)**3-6*(y-1./3)*math.exp(-x**2-(y-1./3)**2) +
+            6*(y-5./3)*math.exp(-x**2-(y-5./3)**2) +
+            10*y*math.exp(-(x-1)**2-y**2) +
+            10*y*math.exp(-(x+1)**2-y**2)] # put here the potential gradient
 
 # evolution function
 def run(ind):
-	global rep
-	global size
+    global rep
+    global size
     # evolution for replica ind, return reaction coordinate
-	u=random.random()
-	v=random.random()
-	tgx=math.sqrt(2.*dt/beta)*math.sqrt(-2*math.log(u))*math.cos(2*math.acos(-1)*v)
-	tgy=math.sqrt(2.*dt/beta)*math.sqrt(-2*math.log(u))*math.sin(2*math.acos(-1)*v)
-	# ref: https://en.wikipedia.org/wiki/Normal_distribution#Generating_values_from_normal_distribution
-	tPot=dPot(rep[ind][size[ind]])
-	rep[ind].append([rep[ind][size[ind]][0]-dt*tPot[0]+tgx,rep[ind][size[ind]][1]-dt*tPot[1]+tgy])
-	size[ind]=size[ind]+1
-	return reccoord(ind)
+    u=random.random()
+    v=random.random()
+    tgx=math.sqrt(2.*dt/beta)*math.sqrt(-2*math.log(u))*math.cos(2*math.acos(-1)*v)
+    tgy=math.sqrt(2.*dt/beta)*math.sqrt(-2*math.log(u))*math.sin(2*math.acos(-1)*v)
+    # ref: https://en.wikipedia.org/wiki/Normal_distribution#Generating_values_from_normal_distribution
+    tPot=dPot(rep[ind][size[ind]])
+    rep[ind].append([rep[ind][size[ind]][0]-dt*tPot[0]+tgx,rep[ind][size[ind]][1]-dt*tPot[1]+tgy])
+    size[ind]=size[ind]+1
+    return reccoord(ind)
 
 ##################################################################
 # building the replicas structure
@@ -84,7 +87,7 @@ def run(ind):
 
 num_test=10000
 montecarlo = 0.  
-modulo=1
+modulo=100
 
 X = np.linspace(-1.5,1.5,100)
 Y = np.linspace(-1.,2.,100)
@@ -93,8 +96,8 @@ X,Y = np.meshgrid(X,Y)
 
 Z = V(X,Y)
 
-plt.figure()
-plt.contour(X,Y,Z)
+LISTE_X=[]
+LISTE_Y=[]
 
 for j in range(num_test):
     if j%modulo==0:
@@ -121,44 +124,25 @@ for j in range(num_test):
     if j%modulo==0:
         liste_x=[rep[0][k][0] for k in range(len(rep[0]))]
         liste_y=[rep[0][k][1] for k in range(len(rep[0]))]
-        plt.plot(liste_x,liste_y)
+        LISTE_X.append(liste_x)
+        LISTE_Y.append(liste_y)
     if zone(i)==1:
         montecarlo+=1
         
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title(r'Répliques, $\beta$ =' + str(beta) + r',$dt$ = ' + str(dt))
-plt.show()
-        
 montecarlo/=num_test
-
-print(montecarlo)
-
+print(montecarlo) # Proba finale
 
 
-# for AMS: we can introduce the loop here!
-	# step 1: define the killing level
-	# step 2: check the stop criterion
-	# step 3: kill and replicate
-	#
-	# SOME IDEAS:
-	# introduce a variable for the killing level
-	# introduce a list with indices of replicas to kill
-	# introduce a list with indices of alive replicas
-	# introduce a function that replicates a replica (make a hard copy until the first point after the killing level and then evolve using the run function)
-	# This last function will change the replica, the size and the level lists!
-	#
-	# TO PRINT:
-	# killing level elovution
-	# the final replicas
-	# the final probability
+# Sauvegarde de la figure au format pdf
 
-# for DNS: really easy!
-	# Evolve until zone != 1
-	# count number of times reached A or B
-	# restart from the initial point
-	# Note that some parts of the program are the same, but there is no need to keep the replicas in memory!
-	#
-	# TO PRINT:
-	# the replicas that reached B
-	# the final probability
+filename = 'FIGURE_MONTECARLO_BETA-{}_dt-{}_NUMTEST-{}_NUMTRACES-{}.pdf'.format(beta,dt,num_test,int(num_test/modulo))
+with PdfPages(filename) as pdf :
+    fig, ax = plt.subplots(1, 1)
+    ax.set_xlabel('$x$')
+    ax.set_ylabel('$y$')
+    ax.set_title(r'Répliques, $\beta$ =' + str(beta) + r',$dt$ = ' + str(dt) + r',proba = ' + str(montecarlo))
+    for i in range(len(LISTE_X)):
+        ax.plot(LISTE_X[i],LISTE_Y[i])
+    plt.contour(X,Y,Z)
+    pdf.savefig()
+    plt.close()      
