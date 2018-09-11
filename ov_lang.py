@@ -8,9 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # variables
-numrep=5
+numrep=500
 dt=0.01
-beta=1.0  # tester pour 300K ou alors beta = 6.67 ou 1.67
+beta=6.67  # tester pour 300K ou alors beta = 6.67 ou 1.67
 nkill=1
 # initial points
 xi=-0.7
@@ -117,6 +117,8 @@ def replication(indice,alive_replicas, killing_level):
 
 #AMS
 zmax=4.255
+nb_iterations=0.
+proba=1.
 while(True):
 	alive_replicas=[]
 	replicas_to_kill=[]
@@ -132,12 +134,26 @@ while(True):
 			replicas_to_kill.append(l)
 		else :
 			alive_replicas.append(l)
+	proba = proba * len(alive_replicas)/numrep
 	if len(replicas_to_kill)==numrep :
 		break;
 	for indice in replicas_to_kill :
 		replication(indice,alive_replicas, killing_level)
+	nb_iterations+=1
         
         
+print(nb_iterations)
+
+#a la fin, on compte le nombre de replicas dans B
+r=0
+for k in range(numrep):
+	if zone(k)==1 :
+		r+=1;
+proba = proba*r/numrep
+
+print(proba)
+
+
 #%% Courbes
 
 X = np.linspace(-1.5,1.5,100)
