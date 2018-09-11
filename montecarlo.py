@@ -6,12 +6,13 @@ import random
 import math
 import numpy as np
 import sys
+import string
 from matplotlib.backends.backend_pdf import PdfPages
 
 # variables
 numrep=1
 dt=0.01
-beta=3.67  # tester pour 300K ou alors beta = 6.67 ou 1.67
+beta=6.67  # tester pour 300K ou alors beta = 6.67 ou 1.67
 nkill=1
 # initial points
 xi=-0.7
@@ -83,11 +84,15 @@ def run(ind):
 ##################################################################
 # building the replicas structure
     
-#%%Montecarlo
+#%% Fichier
+    
+f = open('montecarlo.mc','w')
+    
 
-num_test=10000
-montecarlo = 0.  
-modulo=100
+num_test=100000
+N_A = 0
+N_B = 0  
+modulo=1000
 
 X = np.linspace(-1.5,1.5,100)
 Y = np.linspace(-1.,2.,100)
@@ -127,13 +132,18 @@ for j in range(num_test):
         LISTE_X.append(liste_x)
         LISTE_Y.append(liste_y)
     if zone(i)==1:
-        montecarlo+=1
+        N_B+=1
+        f.write('%d %d \n' % (N_A,N_B))
+    elif zone(i)==-1:
+        N_A+=1
+        f.write('%d %d \n' % (N_A,N_B))
         
-montecarlo/=num_test
+montecarlo = float(N_B)/num_test
 print(montecarlo) # Proba finale
 
+f.close()
 
-# Sauvegarde de la figure au format pdf
+#%% Sauvegarde de la figure au format pdf
 
 filename = 'FIGURE_MONTECARLO_BETA-{}_dt-{}_NUMTEST-{}_NUMTRACES-{}.pdf'.format(beta,dt,num_test,int(num_test/modulo))
 with PdfPages(filename) as pdf :
