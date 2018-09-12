@@ -5,7 +5,9 @@ import random
 import math
 import copy
 import numpy as np
+
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 xi=-0.7
 yi=0.
 
@@ -14,6 +16,8 @@ numrep=1000
 dt=0.01
 beta=6.67  # tester pour 300K ou alors beta = 6.67 ou 1.67
 nkill=numrep//10
+numtrajectoires=10
+
 # initial points
 
 liste_beta = np.linspace(1.67,5,20);
@@ -187,7 +191,7 @@ def AMS(numrep):
 
 
 
-for k in range(20):
+for k in range(5,10):
     beta = liste_beta[k];
     filename = 'VARIATION_BETA\proba_beta-{}.txt'.format(beta)
     arq = open(filename,'a')
@@ -198,7 +202,7 @@ for k in range(20):
     arq.close()
     
     # faire tracé
-    if k % modulo==0 :
+    if k % 4==0 :
         X = np.linspace(-1.5,1.5,100)
         Y = np.linspace(-1.,2.,100)
         
@@ -227,4 +231,5 @@ for k in range(20):
             plt.contour(X,Y,Z)
             pdf.savefig()
         plt.close() 
+    
     
